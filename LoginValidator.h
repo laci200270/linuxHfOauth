@@ -11,7 +11,7 @@ public:
     /***
      * @return  true if credentials are correct, false otherwise
      */
-    bool checkCredentials(std::map<std::string,std::string>());
+    virtual bool checkCredentials(std::map<std::string,std::string>())=0;
 };
 
 
