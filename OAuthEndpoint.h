@@ -6,9 +6,9 @@
 class OAuthEndpoint {
 
 public:
-    OAuthEndpoint(LoginValidator &loginValidator);
+    OAuthEndpoint(LoginValidation::LoginValidator &loginValidator);
 private:
-    LoginValidator &loginValidator;
+    LoginValidation::LoginValidator &loginValidator;
 };
 
 

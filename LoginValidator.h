@@ -4,15 +4,16 @@
 
 #include <map>
 #include <string>
+namespace LoginValidation {
+    class LoginValidator {
+    public:
+        LoginValidator();
 
-class LoginValidator {
-public:
-    LoginValidator();
-    /***
-     * @return  true if credentials are correct, false otherwise
-     */
-    virtual bool checkCredentials(std::map<std::string,std::string>())=0;
-};
-
+        /***
+         * @return  true if credentials are correct, false otherwise
+         */
+        virtual bool checkCredentials(std::map<std::string, std::string>()) = 0;
+    };
+}
 
 #endif //LINUXHAZI_LOGINVALIDATOR_H
