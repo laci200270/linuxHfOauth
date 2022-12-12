@@ -2,10 +2,13 @@
 #define LINUXHAZI_POSTGRESLOGINVALIDATOR_H
 
 #include "LoginValidator.h"
+#include <pqxx/pqxx>
 
 namespace LoginValidation {
 
     class PostgresLoginValidator : LoginValidation::LoginValidator {
+    public:
+        PostgresLoginValidator(pqxx::connection &connection);
         bool checkCredentials(std::map<std::string, std::string> (*pFunction)()) override;
     };
 
