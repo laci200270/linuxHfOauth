@@ -21,8 +21,10 @@ int main(int argc, char *argv[]) {
                                                                                      std::chrono::milliseconds(1)),
                                                                          true);
     file_sink->set_level(spdlog::level::trace);
-    mainLogger.sinks().push_back(file_sink);
-    mainLogger.sinks().push_back(console_sink);
+    std::vector<spdlog::sink_ptr> sinkList;
+    sinkList.push_back(file_sink);
+    sinkList.push_back(console_sink);
+    mainLogger.sinks().insert(mainLogger.sinks().end(),sinkList.begin(),sinkList.end());
     try {
         auto configFileName = "configFile.json";
         if (argc > 1)
