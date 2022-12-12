@@ -10,6 +10,8 @@ namespace LoginValidation {
     public:
         PostgresLoginValidator(pqxx::connection &connection);
         bool checkCredentials(std::map<std::string, std::string> (*pFunction)()) override;
+    private:
+        pqxx::connection &connection;
     };
 
 } // LoginValidation
