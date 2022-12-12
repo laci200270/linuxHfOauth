@@ -10,7 +10,7 @@ namespace LoginValidation {
         /***
          * @return  true if credentials are correct, false otherwise
          */
-        virtual bool checkCredentials(std::map<std::string, std::string>()) = 0;
+        virtual bool checkCredentials(std::map<std::string, std::string> credentialMap) = 0;
     };
 }
 

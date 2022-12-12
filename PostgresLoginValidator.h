@@ -9,7 +9,8 @@ namespace LoginValidation {
     class PostgresLoginValidator : LoginValidation::LoginValidator {
     public:
         PostgresLoginValidator(pqxx::connection &connection);
-        bool checkCredentials(std::map<std::string, std::string> (*pFunction)()) override;
+
+        bool checkCredentials(std::map<std::string, std::string> credentialMap) override;
     private:
         pqxx::connection &connection;
     };
