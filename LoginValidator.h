@@ -7,8 +7,6 @@
 namespace LoginValidation {
     class LoginValidator {
     public:
-        LoginValidator();
-
         /***
          * @return  true if credentials are correct, false otherwise
          */
