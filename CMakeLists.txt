@@ -8,6 +8,6 @@ pkg_check_modules(Pistache REQUIRED IMPORTED_TARGET libpistache)
 
 
 find_package(spdlog REQUIRED)
-add_executable(${PROJECT_NAME} main.cpp)
+add_executable(${PROJECT_NAME} main.cpp OAuthEndpoint.cpp LoginValidator.h)
 target_link_libraries(${PROJECT_NAME} PRIVATE PkgConfig::Pistache)
 target_link_libraries(${PROJECT_NAME} PRIVATE spdlog::spdlog)
