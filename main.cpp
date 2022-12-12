@@ -7,8 +7,6 @@
 #include <fstream>
 #include "OAuthEndpoint.h"
 
-using namespace Pistache;
-
 
 int main(int argc, char *argv[]) {
     nlohmann::json config;
@@ -41,10 +39,16 @@ int main(int argc, char *argv[]) {
     }
     mainLogger.info("Hello {}", config.value("name", "default"));
     //Make restarting possible without clean exit
-    auto opts = Http::Endpoint::options();
-    opts.flags(Tcp::Options::ReuseAddr);
+    auto pistacheOptions = Pistache::Http::Endpoint::options();
+    pistacheOptions.flags(Pistache::Tcp::Options::ReuseAddr);
+    Pistache::Address address;
+    if(config.contains("listenAddress")&&config.at("listenAddress").is_string())
+        address=Pistache::Address(config["listenAddress"]);
+    else
+        address=Pistache::Address(Pistache::IP::any(),9800);
+    std::shared_ptr<Pistache::Http::Endpoint> endpoint = std::make_shared<Pistache::Http::Endpoint>(address);
     Pistache::Rest::Router router;
-
-//    Http::Endpoint(Pistache::Address("*:9080"),opts);
-
+    endpoint->init(pistacheOptions);
+    endpoint->setHandler(router.handler());
+    endpoint->serve();
 }
