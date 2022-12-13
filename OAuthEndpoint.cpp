@@ -46,3 +46,16 @@ void OAuthEndpoint::tokenCallback(const Pistache::Rest::Request &request, Pistac
 
 }
 
+void
+OAuthEndpoint::authenticateCallback(const Pistache::Rest::Request &request, Pistache::Http::ResponseWriter response) {
+    response.headers().add<Pistache::Http::Header::ContentType>("text/html");
+    response.send(Pistache::Http::Code::Ok, fmt::format(R"( <form method="POST" action="/authorize{0}">
+                                                                                <label for="uname">Username:</label>
+                                                                                <input type="text" id="uname" name="uname"><br><br>
+                                                                                <label for="pw">Password:</label>
+                                                                                <input type="password" id="pw" name="pw"><br><br>
+                                                                                <input type="submit" value="Submit">
+                                                                            </form>)", request.query().as_str()));;
+
+}
+

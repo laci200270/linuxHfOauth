@@ -15,6 +15,8 @@ public:
 
     void tokenCallback(const Pistache::Rest::Request &request, Pistache::Http::ResponseWriter response);
 
+    void authenticateCallback(const Pistache::Rest::Request &request, Pistache::Http::ResponseWriter response);
+
 private:
     LoginValidation::LoginValidator &loginValidator;
     std::vector<spdlog::sink_ptr> logSinks;

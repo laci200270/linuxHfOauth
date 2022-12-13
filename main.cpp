@@ -63,6 +63,8 @@ int main(int argc, char *argv[]) {
                         Pistache::Rest::Routes::bind(&OAuthEndpoint::authorizeCallback, oAuthEndpointSmartPtr));
         router.addRoute(Pistache::Http::Method::Get, "/token",
                         Pistache::Rest::Routes::bind(&OAuthEndpoint::tokenCallback, oAuthEndpointSmartPtr));
+        router.addRoute(Pistache::Http::Method::Get, "/authenticate",
+                        Pistache::Rest::Routes::bind(&OAuthEndpoint::authenticateCallback, oAuthEndpointSmartPtr));
     }
     endpoint->init(pistacheOptions);
     endpoint->setHandler(router.handler());
