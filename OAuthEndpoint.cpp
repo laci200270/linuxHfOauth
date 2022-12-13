@@ -3,9 +3,11 @@
 #include "fmt/format.h"
 #include "jwt/jwt.hpp"
 
-OAuthEndpoint::OAuthEndpoint(LoginValidation::LoginValidator &loginValidator, std::string jwtSecret,
+OAuthEndpoint::OAuthEndpoint(LoginValidation::LoginValidator &loginValidator, TokenHandler &tokenHandler,
+                             std::string jwtSecret,
                              std::vector<spdlog::sink_ptr> logSinks)
-        : loginValidator(loginValidator), jwtSecret(jwtSecret), logSinks(logSinks), logger(("OAuthEndpoint")) {
+        : loginValidator(loginValidator), tokenHandler(tokenHandler), jwtSecret(jwtSecret), logSinks(logSinks),
+          logger(("OAuthEndpoint")) {
     logger.sinks().insert(logger.sinks().end(), logSinks.begin(), logSinks.end());
 }
 

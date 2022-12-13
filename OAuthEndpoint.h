@@ -4,11 +4,12 @@
 #include <pistache/router.h>
 #include <spdlog/common.h>
 #include "LoginValidator.h"
+#include "TokenHandler.h"
 
 class OAuthEndpoint {
 
 public:
-    OAuthEndpoint(LoginValidation::LoginValidator &loginValidator, std::string jwtSecret,
+    OAuthEndpoint(LoginValidation::LoginValidator &loginValidator, TokenHandler &tokenHandler, std::string jwtSecret,
                   std::vector<spdlog::sink_ptr> logSinks = std::vector<spdlog::sink_ptr>()
     );
 
@@ -22,6 +23,7 @@ private:
     std::string urlDecode(std::string source);
 
     LoginValidation::LoginValidator &loginValidator;
+    TokenHandler &tokenHandler;
     std::vector<spdlog::sink_ptr> logSinks;
     spdlog::logger logger;
     std::string jwtSecret;

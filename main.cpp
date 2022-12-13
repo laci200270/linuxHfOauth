@@ -8,6 +8,7 @@
 #include <fstream>
 #include "OAuthEndpoint.h"
 #include "PostgresLoginValidator.h"
+#include "PostgresTokenHandler.h"
 
 int main(int argc, char *argv[]) {
     nlohmann::json config;
@@ -51,10 +52,13 @@ int main(int argc, char *argv[]) {
     else
         address = Pistache::Address(Pistache::IP::any(), 9800);
     std::shared_ptr<Pistache::Http::Endpoint> endpoint = std::make_shared<Pistache::Http::Endpoint>(address);
+    std::string jwtSecret = "totallysecret";
     Pistache::Rest::Router router;
     pqxx::connection conn(config.value("postgresAddress", ""));
     auto loginValidator = LoginValidation::PostgresLoginValidator(conn, sinkList);
-    auto oAuthEndpointSmartPtr = std::make_shared<OAuthEndpoint>(loginValidator, "totallysecret", sinkList);
+    auto tokenHandler = PostgresTokenHandler(jwtSecret, conn);
+    auto oAuthEndpointSmartPtr = std::make_shared<OAuthEndpoint>(loginValidator, tokenHandler, jwtSecret,
+                                                                 sinkList);
     {
         using namespace std::placeholders;
         router.addRoute(Pistache::Http::Method::Get, "/authorize",
