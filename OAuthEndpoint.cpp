@@ -1,4 +1,5 @@
 #include "OAuthEndpoint.h"
+#include "fmt/format.h"
 
 OAuthEndpoint::OAuthEndpoint(LoginValidation::LoginValidator &loginValidator, std::vector<spdlog::sink_ptr> logSinks)
         : loginValidator(loginValidator), logSinks(logSinks), logger(("OAuthEndpoint")) {
@@ -22,8 +23,11 @@ void OAuthEndpoint::authorizeCallback(const Pistache::Rest::Request &request, Pi
                         response.send(Pistache::Http::Code::Not_Implemented);
                         break;
                     }
-
-                    response.send(Pistache::Http::Code::Ok);
+                    std::string locationUri = fmt::format(
+                            "/authenticate?response_type={}&client_id={}&redirect_uri={}&scope={}&state={}",
+                            responseType, client_id, redirect_uri, scope, state);
+                    response.headers().add<Pistache::Http::Header::Location>(locationUri);
+                    response.send(Pistache::Http::Code::Temporary_Redirect);
                 } else {
                     response.send(Pistache::Http::Code::Not_Implemented);
                     break;
