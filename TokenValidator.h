@@ -9,9 +9,11 @@ class TokenValidator {
 protected:
     std::vector<spdlog::sink_ptr> logSinks;
     spdlog::logger logger;
+    std::string jwtSecret;
 
-    TokenValidator(const std::vector<spdlog::sink_ptr> &logSinks = std::vector<spdlog::sink_ptr>(),
-                   const std::string loggerName = "GenericTokenValidator") : logSinks(logSinks),
+    TokenValidator(const std::string jwtSecret,
+                   const std::vector<spdlog::sink_ptr> &logSinks = std::vector<spdlog::sink_ptr>(),
+                   const std::string loggerName = "GenericTokenValidator") : jwtSecret(jwtSecret), logSinks(logSinks),
                                                                              logger(loggerName) {
         logger.sinks().insert(logger.sinks().end(), logSinks.begin(), logSinks.end());
     };
@@ -22,7 +24,27 @@ public:
     virtual bool validateRefreshToken(const std::string &userName, const std::string &refreshToken) = 0;
 
     virtual bool validateAccessTokenForScope(const std::string &userName, const std::string &accessToken,
-                                             const std::string &scope) = 0;
+                                             const std::string &scope) {
+        using namespace jwt::params;
+        std::error_code ec;
+        auto dec_obj = jwt::decode(accessToken, algorithms({"HS256"}), ec, secret(jwtSecret), verify(true));
+
+        if (ec.value() == 0) {
+            if (dec_obj.has_claim("scope")) {
+                std::string paramSplitChar = " ", scopes = dec_obj.payload().get_claim_value<std::string>("scope");
+                int start, end = -1 * paramSplitChar.size();
+                do {
+                    start = end + paramSplitChar.size();
+                    end = scopes.find(paramSplitChar, start);
+                    std::string currLine = scopes.substr(start, end - start);
+                    if (currLine == scope) {
+                        return true;
+                    }
+                } while (end != -1);
+            }
+        }
+        return false;
+    };
 };
 
 #endif //LINUXHAZI_TOKENVALIDATOR_H
