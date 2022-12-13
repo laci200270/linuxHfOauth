@@ -34,7 +34,8 @@ namespace LoginValidation {
         std::optional<PostgresLoginValidator::PostgresUserInternalRepresentation>
         getInternalUserRepresentationFromUsername(std::string username);
 
-        PostgresLoginValidator(pqxx::connection &connection);
+        PostgresLoginValidator(pqxx::connection &connection,
+                               std::vector<spdlog::sink_ptr> logSinks = std::vector<spdlog::sink_ptr>());
 
         bool checkCredentials(std::map<std::string, std::string> credentialMap) override;
 

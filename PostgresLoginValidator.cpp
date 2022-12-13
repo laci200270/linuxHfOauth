@@ -31,7 +31,9 @@ namespace LoginValidation {
         return user;
     }
 
-    PostgresLoginValidator::PostgresLoginValidator(pqxx::connection &connection) : connection(connection) {
+    PostgresLoginValidator::PostgresLoginValidator(pqxx::connection &connection, std::vector<spdlog::sink_ptr> logSinks)
+            : connection(connection),
+              LoginValidation::LoginValidator(logSinks) {
 
     }
 

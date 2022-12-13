@@ -4,9 +4,13 @@
 
 #include <map>
 #include <string>
+#include <vector>
+#include <spdlog/spdlog.h>
+
 namespace LoginValidation {
     class LoginValidator {
     public:
+
         /***
          * @return  true if credentials are correct, false otherwise
          */
@@ -21,6 +25,7 @@ namespace LoginValidation {
             std::string displayName;
             ///The email adddress of the user
             std::string email;
+
         public:
             const std::string &getDisplayName() const {
                 return displayName;
@@ -30,6 +35,13 @@ namespace LoginValidation {
                 return email;
             }
         };
+
+    protected:
+        ///Internal storage for log sinks
+        std::vector<spdlog::sink_ptr> logSinks;
+
+        ///Protected constructor
+        LoginValidator(std::vector<spdlog::sink_ptr> logSinks) : logSinks(logSinks) {};
     };
 }
 
