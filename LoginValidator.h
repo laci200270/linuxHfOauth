@@ -16,11 +16,19 @@ namespace LoginValidation {
          * Generic, minimal representation of an user
          */
         class User {
-        public:
+        protected:
             ///The display name of the user
             std::string displayName;
             ///The email adddress of the user
             std::string email;
+        public:
+            const std::string &getDisplayName() const {
+                return displayName;
+            }
+
+            const std::string &getEmail() const {
+                return email;
+            }
         };
     };
 }

@@ -35,15 +35,6 @@ namespace LoginValidation {
 
     }
 
-
-    const std::string &PostgresLoginValidator::PostgresUserInternalRepresentation::getEmail() const {
-        return email;
-    }
-
-    const std::string &PostgresLoginValidator::PostgresUserInternalRepresentation::getDisplayName() const {
-        return displayName;
-    }
-
     const std::string &PostgresLoginValidator::PostgresUserInternalRepresentation::getUsername() const {
         return username;
     }

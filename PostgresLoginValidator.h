@@ -9,14 +9,14 @@ namespace LoginValidation {
     class PostgresLoginValidator : LoginValidation::LoginValidator {
     public:
 
-        class PostgresUserInternalRepresentation {
+        class PostgresUserInternalRepresentation : User {
         private:
             PostgresUserInternalRepresentation(const std::string &email, const std::string &displayName,
                                                const std::string &username, const std::string &passwordHash,
                                                unsigned int id);
 
             unsigned id;
-            std::string email, displayName, username, passwordHash;
+            std::string username, passwordHash;
         public:
             const std::string &getEmail() const;
 
