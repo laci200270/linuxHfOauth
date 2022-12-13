@@ -34,7 +34,8 @@ namespace LoginValidation {
     PostgresLoginValidator::PostgresLoginValidator(pqxx::connection &connection, std::vector<spdlog::sink_ptr> logSinks)
             : connection(connection),
               LoginValidation::LoginValidator(logSinks) {
-
+        logger = logger = spdlog::logger("PostgresLoginValidator");
+        logger.sinks().insert(logger.sinks().end(), logSinks.begin(), logSinks.end());
     }
 
     const std::string &PostgresLoginValidator::PostgresUserInternalRepresentation::getUsername() const {
