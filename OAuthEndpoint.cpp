@@ -1,9 +1,10 @@
 #include "OAuthEndpoint.h"
 
 OAuthEndpoint::OAuthEndpoint(LoginValidation::LoginValidator &loginValidator, std::vector<spdlog::sink_ptr> logSinks)
-        : loginValidator(loginValidator), logSinks(logSinks) {
+        : loginValidator(loginValidator), logSinks(logSinks), logger(("OAuthEndpoint")) {
 
 }
+
 
 void OAuthEndpoint::authorizeCallback(const Pistache::Rest::Request &request, Pistache::Http::ResponseWriter response) {
 

@@ -18,6 +18,8 @@ public:
 private:
     LoginValidation::LoginValidator &loginValidator;
     std::vector<spdlog::sink_ptr> logSinks;
+    spdlog::logger logger;
+
 };
 
 
