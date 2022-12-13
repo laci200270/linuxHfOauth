@@ -37,9 +37,14 @@ void OAuthEndpoint::authorizeCallback(const Pistache::Rest::Request &request, Pi
                     auto credentialsMap = decodeFormData(request.body());
                     if (loginValidator.checkCredentials(credentialsMap)) {
                         using namespace jwt::params;
-                        jwt::jwt_object obj{algorithm("HS256"), secret(jwtSecret),
-                                            payload({{"user", credentialsMap["username"]}})};
-                        locationUri = fmt::format("{0}?state={1}&code={2}", redirect_uri, state, obj.signature());
+                        jwt::jwt_object token{algorithm("HS256"), secret(jwtSecret),
+                                              payload({{"user", credentialsMap["username"]}})};
+
+                        token.add_claim("expires",
+                                        (std::chrono::system_clock::now() +
+                                         std::chrono::minutes(10)).time_since_epoch() /
+                                        std::chrono::seconds(1));
+                        locationUri = fmt::format("{0}?state={1}&code={2}", redirect_uri, state, token.signature());
                     } else {
                         response.send(Pistache::Http::Code::Unauthorized, "Wrong username or password");
                         return;
