@@ -4,9 +4,10 @@
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/sinks/basic_file_sink.h>
+#include <pistache/router.h>
 #include <fstream>
 #include "OAuthEndpoint.h"
-
+#include "PostgresLoginValidator.h"
 
 int main(int argc, char *argv[]) {
     nlohmann::json config;
@@ -24,7 +25,7 @@ int main(int argc, char *argv[]) {
     std::vector<spdlog::sink_ptr> sinkList;
     sinkList.push_back(file_sink);
     sinkList.push_back(console_sink);
-    mainLogger.sinks().insert(mainLogger.sinks().end(),sinkList.begin(),sinkList.end());
+    mainLogger.sinks().insert(mainLogger.sinks().end(), sinkList.begin(), sinkList.end());
     try {
         auto configFileName = "configFile.json";
         if (argc > 1)
@@ -44,12 +45,24 @@ int main(int argc, char *argv[]) {
     auto pistacheOptions = Pistache::Http::Endpoint::options();
     pistacheOptions.flags(Pistache::Tcp::Options::ReuseAddr);
     Pistache::Address address;
-    if(config.contains("listenAddress")&&config.at("listenAddress").is_string())
-        address=Pistache::Address(config["listenAddress"]);
+    if (config.contains("listenAddress") && config.at("listenAddress").is_string())
+        address = Pistache::Address(config["listenAddress"]);
     else
-        address=Pistache::Address(Pistache::IP::any(),9800);
+        address = Pistache::Address(Pistache::IP::any(), 9800);
     std::shared_ptr<Pistache::Http::Endpoint> endpoint = std::make_shared<Pistache::Http::Endpoint>(address);
     Pistache::Rest::Router router;
+    pqxx::connection conn(config.value("postgresAddress", ""));
+    auto loginValidator = LoginValidation::PostgresLoginValidator(conn);
+    auto oAuthEndpointSmartPtr = std::make_shared<OAuthEndpoint>(loginValidator);
+    {
+        using namespace std::placeholders;
+        router.addRoute(Pistache::Http::Method::Get, "/authorize",
+                        Pistache::Rest::Routes::bind(&OAuthEndpoint::authorizeCallback, oAuthEndpointSmartPtr));
+        router.addRoute(Pistache::Http::Method::Post, "/authorize",
+                        Pistache::Rest::Routes::bind(&OAuthEndpoint::authorizeCallback, oAuthEndpointSmartPtr));
+        router.addRoute(Pistache::Http::Method::Get, "/token",
+                        Pistache::Rest::Routes::bind(&OAuthEndpoint::tokenCallback, oAuthEndpointSmartPtr));
+    }
     endpoint->init(pistacheOptions);
     endpoint->setHandler(router.handler());
     endpoint->serve();
