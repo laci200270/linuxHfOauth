@@ -33,8 +33,20 @@ void PostgresTokenHandler::registerRefreshToken(const std::string &userName, con
 
 bool PostgresTokenHandler::validateClientSecret(const std::string &clientId, const std::string &clientSecret) {
     using namespace pqxx;
-    auto sql = fmt::format("SELECT * from clients WHERE clientid='{}' AND clientsecret='{}' ", connection.esc(clientId),
+    auto sql = fmt::format("SELECT * from \"clients\" WHERE \"clientid=\"'{}' AND \"clientsecret\"='{}' ",
+                           connection.esc(clientId),
                            connection.esc(clientSecret));
+    nontransaction sqlNonTransactQuery(connection);
+    result queryResult(sqlNonTransactQuery.exec(sql));
+    return !queryResult.empty();
+}
+
+bool PostgresTokenHandler::validateRefreshToken(const std::string &userName, const std::string &refreshToken) {
+    using namespace pqxx;
+    auto sql = fmt::format(
+            "SELECT * from \"refreshTokens\" WHERE \"userId\"=((SELECT \"id\" FROM users WHERE \"username\"='{0}' AND \"token\"='{1}'))",
+            connection.esc(userName),
+            connection.esc(refreshToken));
     nontransaction sqlNonTransactQuery(connection);
     result queryResult(sqlNonTransactQuery.exec(sql));
     return !queryResult.empty();
