@@ -44,6 +44,7 @@ void OAuthEndpoint::authorizeCallback(const Pistache::Rest::Request &request, Pi
                                         (std::chrono::system_clock::now() +
                                          std::chrono::minutes(10)).time_since_epoch() /
                                         std::chrono::seconds(1));
+                        token.add_claim("scope", scope);
                         locationUri = fmt::format("{0}?state={1}&code={2}", redirect_uri, state, token.signature());
                     } else {
                         response.send(Pistache::Http::Code::Unauthorized, "Wrong username or password");
