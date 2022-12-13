@@ -36,6 +36,7 @@ namespace LoginValidation {
               LoginValidation::LoginValidator(logSinks) {
         logger = logger = spdlog::logger("PostgresLoginValidator");
         logger.sinks().insert(logger.sinks().end(), logSinks.begin(), logSinks.end());
+        logger.info("PostgresLoginValidator successfully started");
     }
 
     const std::string &PostgresLoginValidator::PostgresUserInternalRepresentation::getUsername() const {
