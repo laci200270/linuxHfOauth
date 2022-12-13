@@ -4,7 +4,6 @@
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/sinks/basic_file_sink.h>
-#include <pistache/router.h>
 #include <fstream>
 #include "OAuthEndpoint.h"
 #include "PostgresLoginValidator.h"
@@ -53,7 +52,7 @@ int main(int argc, char *argv[]) {
     Pistache::Rest::Router router;
     pqxx::connection conn(config.value("postgresAddress", ""));
     auto loginValidator = LoginValidation::PostgresLoginValidator(conn);
-    auto oAuthEndpointSmartPtr = std::make_shared<OAuthEndpoint>(loginValidator);
+    auto oAuthEndpointSmartPtr = std::make_shared<OAuthEndpoint>(loginValidator, sinkList);
     {
         using namespace std::placeholders;
         router.addRoute(Pistache::Http::Method::Get, "/authorize",
