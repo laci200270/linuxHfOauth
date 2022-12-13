@@ -25,8 +25,9 @@ PostgresTokenHandler::PostgresTokenHandler(std::string jwtSecret, pqxx::connecti
 }
 
 void PostgresTokenHandler::registerClientSecret(const std::string &clientId, const std::string &clientSecret) {
-    auto sql = fmt::format("INSERT INTO \"clients\" (\"clientid\", \"clientsecret\") VALUES ('{0}', '{1}')", clientId,
-                           clientSecret);
+    auto sql = fmt::format("INSERT INTO \"clients\" (\"clientid\", \"clientsecret\") VALUES ('{0}', '{1}')",
+                           connection.esc(clientId),
+                           connection.esc(clientSecret));
     pqxx::work work(connection);
     work.exec(sql);
     work.commit();
@@ -36,7 +37,7 @@ void PostgresTokenHandler::registerRefreshToken(const std::string &userName, con
                                                 const std::string &scopes) {
     auto sql = fmt::format(
             "INSERT INTO \"refreshTokens\" (\"scope\", \"token\", \"userId\") VALUES ('{1}', '{2}', (SELECT \"id\" FROM users WHERE \"username\"='{0}'))",
-            userName, refreshToken, scopes);
+            connection.esc(userName), connection.esc(refreshToken), connection.esc(scopes));
     pqxx::work work(connection);
     work.exec(sql);
     work.commit();
