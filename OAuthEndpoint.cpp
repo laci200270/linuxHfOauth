@@ -90,8 +90,28 @@ void OAuthEndpoint::tokenCallback(const Pistache::Rest::Request &request, Pistac
         response.send(Pistache::Http::Code::Unauthorized);
         return;
     }
-
-
+    {
+        using namespace jwt::params;
+        std::error_code ec;
+        auto dec_obj = jwt::decode(code, algorithms({"HS256"}), ec, secret(jwtSecret), verify(true));
+        if (ec) {
+            response.send(Pistache::Http::Code::Unauthorized);
+            return;
+        }
+        {
+            logger.info("payload {}", to_string(dec_obj.payload().create_json_obj()));
+            jwt::jwt_object token{algorithm("HS256"), secret(jwtSecret),
+                                  payload({{"user",  dec_obj.payload().get_claim_value<std::string>("user")},
+                                           {"scope", dec_obj.payload().get_claim_value<std::string>("scope")}})};
+            tokenHandler.registerRefreshToken(dec_obj.payload().get_claim_value<std::string>("user"),
+                                              token.signature(),
+                                              dec_obj.payload().get_claim_value<std::string>("scope"));
+            nlohmann::json ret;
+            ret["refresh_token"] = token.signature();
+            ret["token_type"] = "Bearer"();
+            response.send(Pistache::Http::Code::Ok, to_string(ret));
+        }
+    }
 }
 
 void
