@@ -1,3 +1,4 @@
+#include <regex>
 #include "OAuthEndpoint.h"
 #include "fmt/format.h"
 
@@ -30,8 +31,25 @@ void OAuthEndpoint::authorizeCallback(const Pistache::Rest::Request &request, Pi
                             responseType, client_id, redirect_uri, scope, state);
                     break;
                 case Pistache::Http::Method::Post:
-
-                    locationUri = urlDecode(redirect_uri);
+                    redirect_uri = urlDecode(redirect_uri);
+                    std::string credentialsRaw = request.body();
+                    std::map<std::string, std::string> credentialsMap;
+                    //https://www.geeksforgeeks.org/how-to-split-a-string-in-cc-python-and-java/ method2
+                    std::string paramSplitChar = "&";
+                    std::string keySplitChar = "=";
+                    std::regex paramXTractorRgx("(.*)=(.*)");
+                    std::smatch match;
+                    int start, end = -1 * paramSplitChar.size();
+                    do {
+                        start = end + paramSplitChar.size();
+                        end = credentialsRaw.find(paramSplitChar, start);
+                        std::string currLine = credentialsRaw.substr(start, end - start);
+                        std::regex_search(currLine, match, paramXTractorRgx);
+                        if (std::size(match) == 3) {
+                            credentialsMap.insert(std::make_pair(urlDecode(match[1]), urlDecode(match[2])));
+                        }
+                    } while (end != -1);
+                    loginValidator.checkCredentials(credentialsMap);
                     break;
             }
             response.headers().add<Pistache::Http::Header::Location>(locationUri);
