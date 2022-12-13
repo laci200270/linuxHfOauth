@@ -46,7 +46,9 @@ namespace LoginValidation {
         spdlog::logger logger;
 
         ///Protected constructor
-        LoginValidator(std::vector<spdlog::sink_ptr> logSinks) : logSinks(logSinks), logger("GenericLoginValidator") {
+        LoginValidator(std::vector<spdlog::sink_ptr> logSinks, const std::string loggerName = "GenericLoginValidator")
+                : logSinks(logSinks),
+                  logger(loggerName) {
             logger.sinks().insert(logger.sinks().end(), logSinks.begin(), logSinks.end());
         };
     };
