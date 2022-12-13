@@ -18,6 +18,7 @@ public:
     void authenticateCallback(const Pistache::Rest::Request &request, Pistache::Http::ResponseWriter response);
 
 private:
+    std::string urlDecode(std::string source);
     LoginValidation::LoginValidator &loginValidator;
     std::vector<spdlog::sink_ptr> logSinks;
     spdlog::logger logger;

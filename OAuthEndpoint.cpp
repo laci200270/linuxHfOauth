@@ -59,3 +59,36 @@ OAuthEndpoint::authenticateCallback(const Pistache::Rest::Request &request, Pist
 
 }
 
+
+std::string OAuthEndpoint::urlDecode(std::string source) {
+    std::string returnable;
+    char a, b;
+    char *src = source.data();
+    while (*src) {
+        if ((*src == '%') &&
+            ((a = src[1]) && (b = src[2])) &&
+            (isxdigit(a) && isxdigit(b))) {
+            if (a >= 'a')
+                a -= 'a' - 'A';
+            if (a >= 'A')
+                a -= ('A' - 10);
+            else
+                a -= '0';
+            if (b >= 'a')
+                b -= 'a' - 'A';
+            if (b >= 'A')
+                b -= ('A' - 10);
+            else
+                b -= '0';
+            returnable.push_back(16 * a + b);
+            src += 3;
+        } else if (*src == '+') {
+            returnable.push_back(' ');
+            src++;
+        } else {
+            returnable.push_back(*src++);
+        }
+    }
+    return returnable;
+}
+
