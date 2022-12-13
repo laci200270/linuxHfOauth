@@ -8,37 +8,44 @@ OAuthEndpoint::OAuthEndpoint(LoginValidation::LoginValidator &loginValidator, st
 
 
 void OAuthEndpoint::authorizeCallback(const Pistache::Rest::Request &request, Pistache::Http::ResponseWriter response) {
-    switch (request.method()) {
-        case Pistache::Http::Method::Get:
-            if (request.query().has("response_type") && request.query().has("client_id") &&
-                request.query().has("redirect_uri") && request.query().has("scope") && request.query().has("state")) {
-                auto responseType = *request.query().get("response_type");
-                auto client_id = *request.query().get("client_id");
-                auto redirect_uri = *request.query().get("redirect_uri");
-                auto scope = *request.query().get("scope");
-                auto state = *request.query().get("state");
 
-                if (responseType == "code") {
-                    if (request.query().has("code_challenge") || request.query().has("code_challenge_method")) {
-                        response.send(Pistache::Http::Code::Not_Implemented);
-                        break;
-                    }
-                    std::string locationUri = fmt::format(
+    if (request.query().has("response_type") && request.query().has("client_id") &&
+        request.query().has("redirect_uri") && request.query().has("scope") && request.query().has("state")) {
+        auto responseType = *request.query().get("response_type");
+        auto client_id = *request.query().get("client_id");
+        auto redirect_uri = *request.query().get("redirect_uri");
+        auto scope = *request.query().get("scope");
+        auto state = *request.query().get("state");
+
+        if (responseType == "code") {
+            if (request.query().has("code_challenge") || request.query().has("code_challenge_method")) {
+                response.send(Pistache::Http::Code::Not_Implemented);
+                return;
+            }
+            std::string locationUri = "/";
+            switch (request.method()) {
+                case Pistache::Http::Method::Get:
+                    locationUri = fmt::format(
                             "/authenticate?response_type={}&client_id={}&redirect_uri={}&scope={}&state={}",
                             responseType, client_id, redirect_uri, scope, state);
-                    response.headers().add<Pistache::Http::Header::Location>(locationUri);
-                    response.send(Pistache::Http::Code::Temporary_Redirect);
-                } else {
-                    response.send(Pistache::Http::Code::Not_Implemented);
                     break;
-                }
-            } else {
-                response.send(Pistache::Http::Code::Bad_Request);
-                break;
+                case Pistache::Http::Method::Post:
+
+                    locationUri = urlDecode(redirect_uri);
+                    break;
             }
-        case Pistache::Http::Method::Post:
-            break;
+            response.headers().add<Pistache::Http::Header::Location>(locationUri);
+            response.send(Pistache::Http::Code::Found);
+        } else {
+            response.send(Pistache::Http::Code::Not_Implemented);
+            return;
+        }
+    } else {
+        response.send(Pistache::Http::Code::Bad_Request);
+        return;
     }
+
+
     logger.flush();
 }
 
@@ -47,7 +54,8 @@ void OAuthEndpoint::tokenCallback(const Pistache::Rest::Request &request, Pistac
 }
 
 void
-OAuthEndpoint::authenticateCallback(const Pistache::Rest::Request &request, Pistache::Http::ResponseWriter response) {
+OAuthEndpoint::authenticateCallback(const Pistache::Rest::Request &request,
+                                    Pistache::Http::ResponseWriter response) {
     response.headers().add<Pistache::Http::Header::ContentType>("text/html");
     response.send(Pistache::Http::Code::Ok, fmt::format(R"( <form method="POST" action="/authorize{0}">
                                                                                 <label for="uname">Username:</label>
