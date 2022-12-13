@@ -21,10 +21,14 @@ namespace LoginValidation {
          */
         class User {
         protected:
+
+
             ///The display name of the user
             std::string displayName;
             ///The email adddress of the user
             std::string email;
+        public:
+            User(const std::string &displayName, const std::string &email) : displayName(displayName), email(email) {}
 
         public:
             const std::string &getDisplayName() const {

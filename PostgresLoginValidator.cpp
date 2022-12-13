@@ -25,10 +25,20 @@ namespace LoginValidation {
         if (queryResult.empty()) {
             return std::optional<PostgresLoginValidator::PostgresUserInternalRepresentation>();
         }
+        for (auto userRow = queryResult.begin(); userRow != queryResult.end(); userRow++) {
+//        auto userRow = *queryResult.begin();
+            auto userData = *queryResult.begin();
+            PostgresUserInternalRepresentation user(userData["id"].as<int>(),
+                                                    to_string(userData["displayname"]),
+                                                    to_string(userData["email"]), username,
+                                                    to_string(userRow["pwhash"]));
+            logger.info("{}: {}", user.getEmail(), user.getDisplayName());
+        }
         auto userRow = *queryResult.begin();
-        PostgresUserInternalRepresentation user(userRow["id"].as<int>(), userRow["displayname"].as<std::string>(),
-                                                userRow["email"].as<std::string>(), username,
-                                                userRow["pwhash"].as<std::string>());
+        PostgresUserInternalRepresentation user(userRow["id"].as<int>(),
+                                                to_string(userRow["displayname"]),
+                                                to_string(userRow["email"]), username,
+                                                to_string(userRow["pwhash"]));
         return user;
     }
 
@@ -48,11 +58,17 @@ namespace LoginValidation {
         return BCrypt::validatePassword(password, this->passwordHash);
     }
 
-    PostgresLoginValidator::PostgresUserInternalRepresentation::PostgresUserInternalRepresentation(unsigned int id,
-                                                                                                   const std::string &email,
-                                                                                                   const std::string &displayName,
-                                                                                                   const std::string &username,
-                                                                                                   const std::string &passwordHash) {
+    PostgresLoginValidator::PostgresUserInternalRepresentation::PostgresUserInternalRepresentation(
+            unsigned int id, const std::string &email,
+            const std::string &displayName, const std::string &username, const std::string &passwordHash)
+            : User(displayName, email), id(id), username(username), passwordHash(passwordHash) {
+    }
 
+    const std::string &PostgresLoginValidator::PostgresUserInternalRepresentation::getEmail() const {
+        return User::getEmail();
+    }
+
+    const std::string &PostgresLoginValidator::PostgresUserInternalRepresentation::getDisplayName() const {
+        return User::getDisplayName();
     }
 } // LoginValidation
