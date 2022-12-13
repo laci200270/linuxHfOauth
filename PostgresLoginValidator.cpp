@@ -25,7 +25,7 @@ namespace LoginValidation {
         if (queryResult.empty())
             return std::optional<PostgresLoginValidator::PostgresUserInternalRepresentation>();
         auto userRow = *queryResult.begin();
-        PostgresUserInternalRepresentation user(userRow["id"].as<int>(), userRow["displayRow"].as<std::string>(),
+        PostgresUserInternalRepresentation user(userRow["id"].as<int>(), userRow["displayName"].as<std::string>(),
                                                 userRow["email"].as<std::string>(), username,
                                                 userRow["pwHash"].as<std::string>());
         return user;
