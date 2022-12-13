@@ -22,12 +22,13 @@ namespace LoginValidation {
         auto sql = fmt::format("SELECT * from users WHERE username='{}'", connection.esc(username));
         nontransaction sqlNonTransactQuery(connection);
         result queryResult(sqlNonTransactQuery.exec(sql));
-        if (queryResult.empty())
+        if (queryResult.empty()) {
             return std::optional<PostgresLoginValidator::PostgresUserInternalRepresentation>();
+        }
         auto userRow = *queryResult.begin();
-        PostgresUserInternalRepresentation user(userRow["id"].as<int>(), userRow["displayName"].as<std::string>(),
+        PostgresUserInternalRepresentation user(userRow["id"].as<int>(), userRow["displayname"].as<std::string>(),
                                                 userRow["email"].as<std::string>(), username,
-                                                userRow["pwHash"].as<std::string>());
+                                                userRow["pwhash"].as<std::string>());
         return user;
     }
 
