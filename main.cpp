@@ -54,7 +54,7 @@ int main(int argc, char *argv[]) {
     Pistache::Rest::Router router;
     pqxx::connection conn(config.value("postgresAddress", ""));
     auto loginValidator = LoginValidation::PostgresLoginValidator(conn, sinkList);
-    auto oAuthEndpointSmartPtr = std::make_shared<OAuthEndpoint>(loginValidator, sinkList);
+    auto oAuthEndpointSmartPtr = std::make_shared<OAuthEndpoint>(loginValidator, "totallysecret", sinkList);
     {
         using namespace std::placeholders;
         router.addRoute(Pistache::Http::Method::Get, "/authorize",

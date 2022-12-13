@@ -8,8 +8,9 @@
 class OAuthEndpoint {
 
 public:
-    OAuthEndpoint(LoginValidation::LoginValidator &loginValidator,
-                  std::vector<spdlog::sink_ptr> logSinks = std::vector<spdlog::sink_ptr>());
+    OAuthEndpoint(LoginValidation::LoginValidator &loginValidator, std::string jwtSecret,
+                  std::vector<spdlog::sink_ptr> logSinks = std::vector<spdlog::sink_ptr>()
+    );
 
     void authorizeCallback(const Pistache::Rest::Request &request, Pistache::Http::ResponseWriter response);
 
@@ -23,6 +24,7 @@ private:
     LoginValidation::LoginValidator &loginValidator;
     std::vector<spdlog::sink_ptr> logSinks;
     spdlog::logger logger;
+    std::string jwtSecret;
 
     std::map<std::string, std::string> decodeFormData(std::string data);
 
