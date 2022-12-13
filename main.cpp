@@ -2,6 +2,7 @@
 #include <pistache/router.h>
 #include <nlohmann/json.hpp>
 #include <spdlog/spdlog.h>
+#include <spdlog/cfg/env.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/sinks/basic_file_sink.h>
 #include <fstream>
@@ -22,6 +23,7 @@ int main(int argc, char *argv[]) {
                                                                          true);
     file_sink->set_level(spdlog::level::trace);
     std::vector<spdlog::sink_ptr> sinkList;
+    spdlog::cfg::load_env_levels();
     sinkList.push_back(file_sink);
     sinkList.push_back(console_sink);
     mainLogger.sinks().insert(mainLogger.sinks().end(), sinkList.begin(), sinkList.end());
