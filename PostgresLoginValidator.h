@@ -8,9 +8,36 @@ namespace LoginValidation {
 
     class PostgresLoginValidator : LoginValidation::LoginValidator {
     public:
+
+        class PostgresUserInternalRepresentation {
+        private:
+            PostgresUserInternalRepresentation(const std::string &email, const std::string &displayName,
+                                               const std::string &username, const std::string &passwordHash,
+                                               unsigned int id);
+
+            unsigned id;
+            std::string email, displayName, username, passwordHash;
+        public:
+            const std::string &getEmail() const;
+
+            const std::string &getDisplayName() const;
+
+            const std::string &getUsername() const;
+
+            const bool validatePassword(std::string password);
+
+            PostgresUserInternalRepresentation(unsigned int id, const std::string &email,
+                                               const std::string &displayName,
+                                               const std::string &username, const std::string &passwordHash);
+        };
+
+        std::optional<PostgresLoginValidator::PostgresUserInternalRepresentation>
+        getInternalUserRepresentationFromUsername(std::string username);
+
         PostgresLoginValidator(pqxx::connection &connection);
 
         bool checkCredentials(std::map<std::string, std::string> credentialMap) override;
+
     private:
         pqxx::connection &connection;
     };
