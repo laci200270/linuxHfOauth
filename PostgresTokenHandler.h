@@ -1,11 +1,11 @@
-#ifndef LINUXHAZI_POSTGRESTOKENVALIDATOR_H
-#define LINUXHAZI_POSTGRESTOKENVALIDATOR_H
+#ifndef LINUXHAZI_POSTGRESTOKENHANDLER_H
+#define LINUXHAZI_POSTGRESTOKENHANDLER_H
 
 
 #include <pqxx/connection>
-#include "TokenValidator.h"
+#include "TokenHandler.h"
 
-class PostgresTokenValidator : public TokenValidator {
+class PostgresTokenHandler : public TokenHandler {
 public:
     bool validateClientSecret(const std::string &clientId, const std::string &clientSecret) override;
 
@@ -14,9 +14,9 @@ public:
     bool validateAccessTokenForScope(const std::string &userName, const std::string &accessToken,
                                      const std::string &scope) override;
 
-    PostgresTokenValidator(std::string jwtSecret, pqxx::connection &connection,
-                           std::vector<spdlog::sink_ptr> logSinks = std::vector<spdlog::sink_ptr>());
+    PostgresTokenHandler(std::string jwtSecret, pqxx::connection &connection,
+                         std::vector<spdlog::sink_ptr> logSinks = std::vector<spdlog::sink_ptr>());
 };
 
 
-#endif //LINUXHAZI_POSTGRESTOKENVALIDATOR_H
+#endif //LINUXHAZI_POSTGRESTOKENHANDLER_H

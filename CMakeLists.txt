@@ -12,7 +12,7 @@ find_package(PostgreSQL REQUIRED)
 find_package(cpp-jwt REQUIRED)
 add_subdirectory(external/libbcrypt)
 
-add_executable(${PROJECT_NAME} main.cpp OAuthEndpoint.cpp LoginValidator.h PostgresLoginValidator.cpp PostgresLoginValidator.h TokenValidator.h PostgresTokenValidator.cpp PostgresTokenValidator.h)
+add_executable(${PROJECT_NAME} main.cpp OAuthEndpoint.cpp LoginValidator.h PostgresLoginValidator.cpp PostgresLoginValidator.h TokenHandler.h PostgresTokenHandler.cpp PostgresTokenHandler.h)
 
 target_include_directories(${PROJECT_NAME} PRIVATE "external/libbcrypt/include" IMPORTED)
 target_link_libraries(${PROJECT_NAME} PRIVATE PkgConfig::Pistache)

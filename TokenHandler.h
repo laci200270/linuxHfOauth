@@ -1,20 +1,20 @@
 
-#ifndef LINUXHAZI_TOKENVALIDATOR_H
-#define LINUXHAZI_TOKENVALIDATOR_H
+#ifndef LINUXHAZI_TOKENHANDLER_H
+#define LINUXHAZI_TOKENHANDLER_H
 
 #include <spdlog/logger.h>
 #include "jwt/jwt.hpp"
 
-class TokenValidator {
+class TokenHandler {
 protected:
     std::vector<spdlog::sink_ptr> logSinks;
     spdlog::logger logger;
     std::string jwtSecret;
 
-    TokenValidator(const std::string jwtSecret,
-                   const std::vector<spdlog::sink_ptr> &logSinks = std::vector<spdlog::sink_ptr>(),
-                   const std::string loggerName = "GenericTokenValidator") : jwtSecret(jwtSecret), logSinks(logSinks),
-                                                                             logger(loggerName) {
+    TokenHandler(const std::string jwtSecret,
+                 const std::vector<spdlog::sink_ptr> &logSinks = std::vector<spdlog::sink_ptr>(),
+                 const std::string loggerName = "GenericTokenValidator") : jwtSecret(jwtSecret), logSinks(logSinks),
+                                                                           logger(loggerName) {
         logger.sinks().insert(logger.sinks().end(), logSinks.begin(), logSinks.end());
     };
 
@@ -47,4 +47,4 @@ public:
     };
 };
 
-#endif //LINUXHAZI_TOKENVALIDATOR_H
+#endif //LINUXHAZI_TOKENHANDLER_H
