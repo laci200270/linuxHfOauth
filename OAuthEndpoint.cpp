@@ -1,6 +1,7 @@
 #include <regex>
 #include "OAuthEndpoint.h"
 #include "fmt/format.h"
+#include "jwt/jwt.hpp"
 
 OAuthEndpoint::OAuthEndpoint(LoginValidation::LoginValidator &loginValidator, std::string jwtSecret,
                              std::vector<spdlog::sink_ptr> logSinks)
@@ -35,7 +36,10 @@ void OAuthEndpoint::authorizeCallback(const Pistache::Rest::Request &request, Pi
                     redirect_uri = urlDecode(redirect_uri);
                     auto credentialsMap = decodeFormData(request.body());
                     if (loginValidator.checkCredentials(credentialsMap)) {
-                        locationUri = fmt::format("{0}?state={1}&code={2}", redirect_uri, state, "a");
+                        using namespace jwt::params;
+                        jwt::jwt_object obj{algorithm("HS256"), secret(jwtSecret),
+                                            payload({{"user", credentialsMap["username"]}})};
+                        locationUri = fmt::format("{0}?state={1}&code={2}", redirect_uri, state, obj.signature());
                     } else {
                         response.send(Pistache::Http::Code::Unauthorized, "Wrong username or password");
                         return;
