@@ -57,13 +57,15 @@ void
 OAuthEndpoint::authenticateCallback(const Pistache::Rest::Request &request,
                                     Pistache::Http::ResponseWriter response) {
     response.headers().add<Pistache::Http::Header::ContentType>("text/html");
-    response.send(Pistache::Http::Code::Ok, fmt::format(R"( <form method="POST" action="/authorize{0}">
+    response.send(Pistache::Http::Code::Ok, fmt::format(R"( Give access to {1} service to your access and refresh token
+                                                                            <form method="POST" action="/authorize{0}">
                                                                                 <label for="uname">Username:</label>
                                                                                 <input type="text" id="uname" name="uname"><br><br>
                                                                                 <label for="pw">Password:</label>
                                                                                 <input type="password" id="pw" name="pw"><br><br>
                                                                                 <input type="submit" value="Submit">
-                                                                            </form>)", request.query().as_str()));;
+                                                                            </form>)", request.query().as_str(),
+                                                        request.query().get("client_id").value_or("dummy")));;
 
 }
 
