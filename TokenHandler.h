@@ -21,10 +21,15 @@ protected:
 public:
     virtual bool validateClientSecret(const std::string &clientId, const std::string &clientSecret) = 0;
 
+    virtual void registerClientSecret(const std::string &clientId, const std::string &clientSecret) = 0;
+
     virtual bool validateRefreshToken(const std::string &userName, const std::string &refreshToken) = 0;
 
-    virtual bool validateAccessTokenForScope(const std::string &userName, const std::string &accessToken,
-                                             const std::string &scope) {
+    virtual void
+    registerRefreshToken(const std::string &userName, const std::string &refreshToken, const std::string &scopes) = 0;
+
+    bool validateAccessTokenForScope(const std::string &userName, const std::string &accessToken,
+                                     const std::string &scope) {
         using namespace jwt::params;
         std::error_code ec;
         auto dec_obj = jwt::decode(accessToken, algorithms({"HS256"}), ec, secret(jwtSecret), verify(true));
