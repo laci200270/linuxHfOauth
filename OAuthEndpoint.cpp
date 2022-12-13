@@ -33,7 +33,12 @@ void OAuthEndpoint::authorizeCallback(const Pistache::Rest::Request &request, Pi
                 case Pistache::Http::Method::Post:
                     redirect_uri = urlDecode(redirect_uri);
                     auto credentialsMap = decodeFormData(request.body());
-                    loginValidator.checkCredentials(credentialsMap);
+                    if (loginValidator.checkCredentials(credentialsMap)) {
+                        locationUri = fmt::format("{0}?state={1}&code={2}", redirect_uri, state, "a");
+                    } else {
+                        response.send(Pistache::Http::Code::Unauthorized, "Wrong username or password");
+                        return;
+                    }
                     break;
             }
             response.headers().add<Pistache::Http::Header::Location>(locationUri);
