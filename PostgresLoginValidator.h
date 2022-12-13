@@ -6,7 +6,7 @@
 
 namespace LoginValidation {
 
-    class PostgresLoginValidator : LoginValidation::LoginValidator {
+    class PostgresLoginValidator : public LoginValidation::LoginValidator {
     public:
 
         class PostgresUserInternalRepresentation : User {
