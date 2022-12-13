@@ -51,7 +51,7 @@ int main(int argc, char *argv[]) {
     std::shared_ptr<Pistache::Http::Endpoint> endpoint = std::make_shared<Pistache::Http::Endpoint>(address);
     Pistache::Rest::Router router;
     pqxx::connection conn(config.value("postgresAddress", ""));
-    auto loginValidator = LoginValidation::PostgresLoginValidator(conn);
+    auto loginValidator = LoginValidation::PostgresLoginValidator(conn, sinkList);
     auto oAuthEndpointSmartPtr = std::make_shared<OAuthEndpoint>(loginValidator, sinkList);
     {
         using namespace std::placeholders;
