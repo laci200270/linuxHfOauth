@@ -19,9 +19,12 @@ public:
 
 private:
     std::string urlDecode(std::string source);
+
     LoginValidation::LoginValidator &loginValidator;
     std::vector<spdlog::sink_ptr> logSinks;
     spdlog::logger logger;
+
+    std::map<std::string, std::string> decodeFormData(std::string data);
 
 };
 

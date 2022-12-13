@@ -32,23 +32,7 @@ void OAuthEndpoint::authorizeCallback(const Pistache::Rest::Request &request, Pi
                     break;
                 case Pistache::Http::Method::Post:
                     redirect_uri = urlDecode(redirect_uri);
-                    std::string credentialsRaw = request.body();
-                    std::map<std::string, std::string> credentialsMap;
-                    //https://www.geeksforgeeks.org/how-to-split-a-string-in-cc-python-and-java/ method2
-                    std::string paramSplitChar = "&";
-                    std::string keySplitChar = "=";
-                    std::regex paramXTractorRgx("(.*)=(.*)");
-                    std::smatch match;
-                    int start, end = -1 * paramSplitChar.size();
-                    do {
-                        start = end + paramSplitChar.size();
-                        end = credentialsRaw.find(paramSplitChar, start);
-                        std::string currLine = credentialsRaw.substr(start, end - start);
-                        std::regex_search(currLine, match, paramXTractorRgx);
-                        if (std::size(match) == 3) {
-                            credentialsMap.insert(std::make_pair(urlDecode(match[1]), urlDecode(match[2])));
-                        }
-                    } while (end != -1);
+                    auto credentialsMap = decodeFormData(request.body());
                     loginValidator.checkCredentials(credentialsMap);
                     break;
             }
@@ -118,5 +102,26 @@ std::string OAuthEndpoint::urlDecode(std::string source) {
         }
     }
     return returnable;
+}
+
+std::map<std::string, std::string> OAuthEndpoint::decodeFormData(std::string data) {
+    std::map<std::string, std::string> returnMap;
+    //https://www.geeksforgeeks.org/how-to-split-a-string-in-cc-python-and-java/ method2
+    std::string paramSplitChar = "&";
+    std::string keySplitChar = "=";
+    std::regex paramXTractorRgx("(.*)=(.*)");
+    std::smatch match;
+    int start, end = -1 * paramSplitChar.size();
+    do {
+        start = end + paramSplitChar.size();
+        end = data.find(paramSplitChar, start);
+        std::string currLine = data.substr(start, end - start);
+        std::regex_search(currLine, match, paramXTractorRgx);
+        if (std::size(match) == 3) {
+            returnMap.insert(std::make_pair(urlDecode(match[1]), urlDecode(match[2])));
+        }
+    } while (end != -1);
+
+    return returnMap;
 }
 
