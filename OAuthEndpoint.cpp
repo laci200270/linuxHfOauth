@@ -70,6 +70,27 @@ void OAuthEndpoint::authorizeCallback(const Pistache::Rest::Request &request, Pi
 }
 
 void OAuthEndpoint::tokenCallback(const Pistache::Rest::Request &request, Pistache::Http::ResponseWriter response) {
+    auto parameterMap = decodeFormData(request.body());
+    if (!parameterMap.contains("grant_type") || !parameterMap.contains("client_id") ||
+        !parameterMap.contains("client_secret") || !parameterMap.contains("redirect_uri") ||
+        !parameterMap.contains("code")) {
+        response.send(Pistache::Http::Code::Bad_Request);
+        return;
+    }
+    auto grant_type = parameterMap["grant_type"];
+    auto client_id = parameterMap["client_id"];
+    auto client_secret = parameterMap["client_secret"];
+    auto redirect_uri = parameterMap["redirect_uri"];
+    auto code = parameterMap["code"];
+    if (grant_type != "authorization_code") {
+        response.send(Pistache::Http::Code::Not_Implemented);
+        return;
+    }
+    if (!tokenHandler.validateClientSecret(client_id, client_secret)) {
+        response.send(Pistache::Http::Code::Unauthorized);
+        return;
+    }
+
 
 }
 
